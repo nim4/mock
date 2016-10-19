@@ -13,7 +13,7 @@ func TestX(t *testing.T) {
 
 	mock.ReturnError(true)
 	defer mock.ReturnError(false)
-        err = X(s)
+	err = X(s)
 	if err == nil {
 		t.Fatal("Expected error")
 	}
