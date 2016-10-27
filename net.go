@@ -1,45 +1,34 @@
 package mock
 
 import (
-	"errors"
 	"net"
 	"time"
 )
 
-//shouldMockFail calls and return error?
-var shouldMockFail = false
-
-//ReturnError makes function calls return error if possible
-func ReturnError(flag bool) {
-	shouldMockFail = flag
-}
-
 //ConnMock is mock net.Conn struct for testing
 type ConnMock struct {
+	Error error
 }
 
 //Read implement for net.Conn interface
 func (m ConnMock) Read(b []byte) (n int, err error) {
-	if shouldMockFail {
-		err = errors.New("Dummy Error")
+	if m.Error != nil {
+		err = m.Error
 	}
 	return
 }
 
 //Write implement for net.Conn interface
 func (m ConnMock) Write(b []byte) (n int, err error) {
-	if shouldMockFail {
-		err = errors.New("Dummy Error")
+	if m.Error != nil {
+		err = m.Error
 	}
 	return
 }
 
 //Close implement for net.Conn interface
 func (m ConnMock) Close() error {
-	if shouldMockFail {
-		return errors.New("Dummy Error")
-	}
-	return nil
+	return m.Error
 }
 
 //LocalAddr implement for net.Conn interface
@@ -55,24 +44,15 @@ func (m ConnMock) RemoteAddr() net.Addr {
 
 //SetDeadline implement for net.Conn interface
 func (m ConnMock) SetDeadline(t time.Time) error {
-	if shouldMockFail {
-		return errors.New("Dummy Error")
-	}
-	return nil
+	return m.Error
 }
 
 //SetReadDeadline implement for net.Conn interface
 func (m ConnMock) SetReadDeadline(t time.Time) error {
-	if shouldMockFail {
-		return errors.New("Dummy Error")
-	}
-	return nil
+	return m.Error
 }
 
 //SetWriteDeadline implement for net.Conn interface
 func (m ConnMock) SetWriteDeadline(t time.Time) error {
-	if shouldMockFail {
-		return errors.New("Dummy Error")
-	}
-	return nil
+	return m.Error
 }
