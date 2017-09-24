@@ -1,21 +1,34 @@
 package mock
 
 import (
+	"io"
 	"net"
 	"time"
 )
 
 //ConnMock is mock net.Conn struct for testing
 type ConnMock struct {
-	Error error
+	Buffer [][]byte
+	Error  error
+	i      int
 }
 
 //Read implement for net.Conn interface
-func (m ConnMock) Read(b []byte) (n int, err error) {
+func (m ConnMock) Read(b []byte) (int, error) {
 	if m.Error != nil {
-		err = m.Error
+		return 0, m.Error
 	}
-	return
+
+	if m.Buffer != nil {
+		if m.i < len(m.Buffer) {
+			b = m.Buffer[m.i]
+			m.i++
+			return len(b), nil
+		}
+		return 0, io.EOF
+	}
+
+	return 0, nil
 }
 
 //Write implement for net.Conn interface
