@@ -1,6 +1,7 @@
 package mock
 
 import (
+	"bytes"
 	"io"
 	"net"
 	"time"
@@ -10,20 +11,24 @@ import (
 type ConnMock struct {
 	Buffer [][]byte
 	Error  error
-	i      int
 }
 
 //Read implement for net.Conn interface
-func (m ConnMock) Read(b []byte) (int, error) {
+func (m *ConnMock) Read(b []byte) (int, error) {
 	if m.Error != nil {
 		return 0, m.Error
 	}
 
 	if m.Buffer != nil {
-		if m.i < len(m.Buffer) {
-			b = m.Buffer[m.i]
-			m.i++
-			return len(b), nil
+		if len(m.Buffer) > 0 {
+			reader := bytes.NewReader(m.Buffer[0])
+			n, err := reader.Read(b)
+			if n == len(m.Buffer[0]) {
+				m.Buffer = m.Buffer[1:]
+			} else {
+				m.Buffer[0] = m.Buffer[0][n:]
+			}
+			return n, err
 		}
 		return 0, io.EOF
 	}
